@@ -35,7 +35,7 @@ from fairlearn.metrics import equalized_odds_difference
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
-    page_title="Algorithmic Bias Audit",
+    page_title="Auditing and Mitigating Algorithmic Bias",
     page_icon="🔍",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -341,7 +341,7 @@ def run_pipeline(_df):
 # SIDEBAR
 # ══════════════════════════════════════════════════════════════════════════════
 with st.sidebar:
-    st.markdown("## 🔍 Bias Audit")
+    st.markdown("## 🔍 Auditing & Mitigating Algorithmic Bias")
     st.markdown("---")
     page = st.radio("Navigate", [
         "🏠  Overview",
@@ -359,8 +359,12 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("""
 **Muhammad Atif Ahmed**  
-CS-408 · Intro to AI  
-March 2026
+CS-116/2026
+                
+CS-408 · Introduction to AI  
+NED University
+Ms Madiha Aslam
+
 """)
     st.markdown("---")
     st.caption("Data loads from UCI ML Repository on first run (~60 s)")
@@ -412,7 +416,7 @@ if page == "🏠  Overview":
 <div class="hero">
   <h1>Auditing & Mitigating Algorithmic Bias</h1>
   <p>A comparative study of ML fairness across five architectures using the UCI Adult Income Dataset</p>
-  <div class="meta">Muhammad Atif Ahmed &nbsp;·&nbsp; CS-408 Introduction to AI &nbsp;·&nbsp; March 2026</div>
+  <div class="meta">Muhammad Atif Ahmed &nbsp;·&nbsp; CS-408 Introduction to AI &nbsp;·&nbsp; April 2026</div>
 </div>""", unsafe_allow_html=True)
 
     metric_row([
@@ -987,7 +991,7 @@ elif page == "📄  Research Paper":
   <div style="display:flex;gap:24px;flex-wrap:wrap;font-size:0.82rem;">
     <div><span style="color:#64748b;">Author</span><br><span style="color:#94a3b8;">Muhammad Atif Ahmed</span></div>
     <div><span style="color:#64748b;">Course</span><br><span style="color:#94a3b8;">CS-408 · Introduction to AI</span></div>
-    <div><span style="color:#64748b;">Date</span><br><span style="color:#94a3b8;">March 2, 2026</span></div>
+    <div><span style="color:#64748b;">Date</span><br><span style="color:#94a3b8;">April, 2026</span></div>
     <div><span style="color:#64748b;">Pages</span><br><span style="color:#94a3b8;">7 pages</span></div>
   </div>
 </div>""", unsafe_allow_html=True)
@@ -1054,7 +1058,7 @@ composition of the positive class.
     # ── Download section ───────────────────────────────────────────────────
     st.markdown("#### Download Research Paper")
 
-    paper_path = "Research Paper/Auditing_and_Mitigating_Algorithmic_Bias_IMPROVED.pdf"
+    paper_path = "Research Paper/Auditing_and_Mitigating_Algorithmic_Bias.pdf"
     try:
         with open(paper_path, "rb") as f:
             pdf_bytes = f.read()
@@ -1077,7 +1081,7 @@ composition of the positive class.
         st.info("""
 📂 **To enable PDF download:** Add your research paper PDF to the `Research Paper/` folder in your GitHub repo.
 
-Expected path: `Research Paper/Auditing_and_Mitigating_Algorithmic_Bias_IMPROVED.pdf`
+Expected path: `Research Paper/Auditing_and_Mitigating_Algorithmic_Bias.pdf`
 """)
         st.markdown("""
 The paper covers:
