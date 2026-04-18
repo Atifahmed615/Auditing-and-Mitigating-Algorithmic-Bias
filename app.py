@@ -6,6 +6,7 @@ Muhammad Atif Ahmed — CS-408
 
 import warnings
 warnings.filterwarnings("ignore")
+import os
 import base64
 import streamlit as st
 import pandas as pd
@@ -362,7 +363,7 @@ with st.sidebar:
 CS-116/2026
                 
 CS-408 · Introduction to AI  
-NED University
+NED University               
 Ms Madiha Aslam
 
 """)
