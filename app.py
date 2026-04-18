@@ -1097,7 +1097,9 @@ The paper covers:
 # ── View inline ────────────────────────────────────────────────────────
 
 # Check if file exists before processing
+    from streamlit_pdf_viewer import pdf_viewer
     if os.path.exists(paper_path):
+
         try:
             with open(paper_path, "rb") as f:
                 base64_pdf = base64.b64encode(f.read()).decode('utf-8')
