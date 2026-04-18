@@ -472,7 +472,7 @@ if page == "🏠  Overview":
         "FNR Female": f"{r['fnr_f']:.1%}",
         "80% Rule": "❌ FAIL",
     } for r in res])
-    st.dataframe(df_disp, use_container_width=True, hide_index=True)
+    st.dataframe(df_disp, width="stretch", hide_index=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -507,7 +507,7 @@ elif page == "📊  Raw Data Bias":
         fig.update_layout(title="High-earner rate by gender",
                           yaxis_title="% earning >50K", yaxis_ticksuffix="%",
                           yaxis_range=[0,40], **PLOTLY_THEME)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
     with c2:
         rr_s = rr.sort_values()
@@ -522,7 +522,7 @@ elif page == "📊  Raw Data Bias":
         fig2.update_layout(title="High-earner rate by race",
                            xaxis_title="% earning >50K", xaxis_ticksuffix="%",
                            xaxis_range=[0,35], **PLOTLY_THEME)
-        st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, width="stretch")
 
     st.markdown("#### Intersectional audit: Gender × Race")
     df_raw2 = D["df"]
@@ -536,7 +536,7 @@ elif page == "📊  Raw Data Bias":
                                textposition="outside"))
     fig3.update_layout(barmode="group", title="High-earner rate (%) by Gender × Race",
                        yaxis_title="%", yaxis_range=[0,45], **PLOTLY_THEME)
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig3,width="stretch")
 
     warn("<b>Intersectional finding:</b> White Males (≈33%) earn >50K at approximately "
          "<b>8×</b> the rate of Black Females (≈4%). This compound disadvantage is "
@@ -589,7 +589,7 @@ elif page == "🤖  Model Audit":
     fig.update_layout(showlegend=False, height=400,
                       yaxis_range=[82,90], yaxis2_range=[0,0.55],
                       **PLOTLY_THEME)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     # Scatter — paradox
     fig2 = dark_fig()
@@ -606,7 +606,7 @@ elif page == "🤖  Model Audit":
         yaxis_title="Accuracy (%)",
         xaxis_range=[0.25,0.42], yaxis_range=[84,88.5],
         height=400, **PLOTLY_THEME)
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width="stretch")
 
     ins("Intelligence-Bias Paradox confirmed",
         "Accuracy rises monotonically LR→XGBoost, but DI Gender stays flat at 0.30–0.33 "
@@ -619,7 +619,7 @@ elif page == "🤖  Model Audit":
     fig3.add_trace(go.Bar(name="FNR Female", x=names, y=[r["fnr_f"]*100 for r in res], marker_color="#ef4444"))
     fig3.update_layout(barmode="group", title="False Negative Rate by Gender (%)",
                        yaxis_title="%", yaxis_ticksuffix="%", height=350, **PLOTLY_THEME)
-    st.plotly_chart(fig3, use_container_width=True)
+    st.plotly_chart(fig3,width="stretch")
 
     warn("The model incorrectly labels high-earning women as 'Low Income' at a rate "
          "<b>~8–10 percentage points higher</b> than men — an invisible 'Hidden Penalty' "
@@ -645,7 +645,7 @@ elif page == "📐  Significance Tests":
         "χ² stat": m["chi2"], "p-value": m["p"],
         "Significant?": "✅ YES" if m["sig"] else "❌ NO",
     } for m in mc])
-    st.dataframe(df_mc, use_container_width=True, hide_index=True)
+    st.dataframe(df_mc, width="stretch", hide_index=True)
 
     # Visualise as heatmap
     model_names = [r["Model"] for r in res]
@@ -665,7 +665,7 @@ elif page == "📐  Significance Tests":
     ))
     fig.update_layout(title="McNemar p-value matrix (red = significant difference)",
                       height=380, **PLOTLY_THEME)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     warn("<b>Key decision insight:</b> SVM vs. Logistic Regression (p≈0.73) and "
          "Random Forest vs. Logistic Regression (p≈0.36) are <b>not significantly different</b> "
@@ -692,7 +692,7 @@ elif page == "🧠  SHAP Explainability":
     ))
     fig.update_layout(title="Global SHAP Feature Importance — XGBoost (top 15)",
                       xaxis_title="Mean |SHAP value|", height=480, **PLOTLY_THEME)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     warn("<b>Proxy discrimination detected:</b> The top predictor is "
          "<code>marital-status_Married-civ-spouse</code> — not <code>sex_Male</code> directly. "
@@ -705,7 +705,7 @@ elif page == "🧠  SHAP Explainability":
     fig2.add_trace(go.Bar(name="Female", y=sg.index[::-1], x=sg["Female"][::-1], orientation="h", marker_color="#ef4444"))
     fig2.update_layout(barmode="group", title="SHAP Importance by Gender (top 10 features)",
                        xaxis_title="Mean |SHAP value|", height=400, **PLOTLY_THEME)
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width="stretch")
 
     ins("Double-standard effect",
         "education-num has higher SHAP importance for female predictions than male. "
@@ -757,7 +757,7 @@ The problem: it learns from *what a high-earner looks like in the training data*
     fig.add_hline(y=0.8, line_dash="dash", line_color="#f59e0b",
                   annotation_text="80% Rule", row=1, col=2)
     fig.update_layout(height=380, **PLOTLY_THEME)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     warn("<b>Core insight:</b> SMOTE addresses <i>class</i> imbalance (income level) "
          "independently of <i>group</i> imbalance (gender within income class). "
@@ -821,7 +821,7 @@ elif page == "⚖️   80% Rule Critique":
         showlegend=False, height=440,
         xaxis_range=[0.25,1.0], yaxis_range=[0.1,0.55],
         **PLOTLY_THEME)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     df_imp = pd.DataFrame([{
         "Model": r["Model"],
@@ -833,7 +833,7 @@ elif page == "⚖️   80% Rule Critique":
         {"Model":"Dem. Parity (mitigated)","DI Gender":"0.852","80% Rule":"✅ PASS","EO Difference":"0.318","EO Threshold":"❌ FAIL"},
         {"Model":"Eq. Odds (mitigated)",   "DI Gender":"0.714","80% Rule":"❌ FAIL","EO Difference":"0.187","EO Threshold":"✅ PASS"},
     ])
-    st.dataframe(df_imp, use_container_width=True, hide_index=True)
+    st.dataframe(df_imp, width="stretch", hide_index=True)
     warn("<b>No model passes both criteria simultaneously</b> — exactly as Chouldechova proved. "
          "Practitioners must specify which fairness criterion is required <i>before</i> training.")
 
@@ -878,7 +878,7 @@ elif page == "🛡️   Bias Mitigation":
             fig.add_hline(y=thr,line_dash="dash",line_color="#f59e0b",
                           annotation_text=thr_label,row=1,col=col)
     fig.update_layout(height=400,**PLOTLY_THEME)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     # Results table
     df_mit = pd.DataFrame([{
@@ -892,7 +892,7 @@ elif page == "🛡️   Bias Mitigation":
         "FNR Female": f"{m['fnr_f']:.1%}",
         "80% Rule":   "✅ PASS" if m["di_g"]>=0.8 else "❌ FAIL",
     } for m in mits])
-    st.dataframe(df_mit, use_container_width=True, hide_index=True)
+    st.dataframe(df_mit, width="stretch", hide_index=True)
 
     # FNR flip
     fig2 = dark_fig()
@@ -900,7 +900,7 @@ elif page == "🛡️   Bias Mitigation":
     fig2.add_trace(go.Bar(name="FNR Female", x=labels, y=[m["fnr_f"]*100 for m in mits], marker_color="#ef4444"))
     fig2.update_layout(barmode="group", title="FNR Flip — how mitigation redistributes errors",
                        yaxis_title="%", yaxis_ticksuffix="%", height=360, **PLOTLY_THEME)
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width="stretch")
 
     c1,c2 = st.columns(2)
     with c1:
@@ -1071,7 +1071,7 @@ composition of the positive class.
                 data=pdf_bytes,
                 file_name="Auditing_and_Mitigating_Algorithmic_Bias.pdf",
                 mime="application/pdf",
-                use_container_width=True,
+                width="stretch",
             )
         with col2:
             st.markdown(f"""
@@ -1170,7 +1170,7 @@ elif page == "📓  Jupyter Notebook":
                 data=nb_bytes,
                 file_name="Bias_Audit_Improved.ipynb",
                 mime="application/json",
-                use_container_width=True,
+                width="stretch",
             )
         with col2:
             # Also offer as .py
@@ -1191,7 +1191,7 @@ elif page == "📓  Jupyter Notebook":
                     data=py_text,
                     file_name="Bias_Audit_Improved.py",
                     mime="text/plain",
-                    use_container_width=True,
+                    width="stretch",
                 )
             except Exception:
                 pass
