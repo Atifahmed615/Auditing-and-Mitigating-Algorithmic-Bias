@@ -353,6 +353,8 @@ with st.sidebar:
         "⚖️   80% Rule Critique",
         "🛡️   Bias Mitigation",
         "✅  Conclusions",
+        "📄  Research Paper",
+        "📓  Jupyter Notebook",
     ])
     st.markdown("---")
     st.markdown("""
@@ -964,3 +966,292 @@ elif page == "✅  Conclusions":
     ]
     for i,r in enumerate(refs,1):
         st.markdown(f"{i}. {r}")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PAGE: RESEARCH PAPER
+# ══════════════════════════════════════════════════════════════════════════════
+elif page == "📄  Research Paper":
+    st.markdown('<div class="section-title">Research Paper</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-sub">Auditing and Mitigating Algorithmic Bias: A Comparative Study of Machine Learning Fairness across Architectures</div>', unsafe_allow_html=True)
+
+    # ── Paper metadata card ────────────────────────────────────────────────
+    st.markdown("""
+<div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:24px;margin-bottom:20px;">
+  <div style="font-size:1.1rem;font-weight:600;color:#f1f5f9;margin-bottom:8px;">
+    Auditing and Mitigating Algorithmic Bias
+  </div>
+  <div style="font-size:0.9rem;color:#64748b;margin-bottom:16px;">
+    A Comparative Study of Machine Learning Fairness across Architectures
+  </div>
+  <div style="display:flex;gap:24px;flex-wrap:wrap;font-size:0.82rem;">
+    <div><span style="color:#64748b;">Author</span><br><span style="color:#94a3b8;">Muhammad Atif Ahmed</span></div>
+    <div><span style="color:#64748b;">Course</span><br><span style="color:#94a3b8;">CS-408 · Introduction to AI</span></div>
+    <div><span style="color:#64748b;">Date</span><br><span style="color:#94a3b8;">March 2, 2026</span></div>
+    <div><span style="color:#64748b;">Pages</span><br><span style="color:#94a3b8;">7 pages</span></div>
+  </div>
+</div>""", unsafe_allow_html=True)
+
+    # ── Abstract ───────────────────────────────────────────────────────────
+    with st.expander("📋 Abstract", expanded=True):
+        st.markdown("""
+The rapid integration of Artificial Intelligence into socio-economic decision-making has created an urgent 
+need for algorithmic transparency and equity. This research conducts a multi-layered audit of five machine 
+learning architectures — Logistic Regression, Random Forest, Gradient Boosting, XGBoost, and Linear SVM — 
+utilising the UCI Adult Income Dataset across two sensitive attributes: **gender** and **race**.
+
+Findings reveal an **"Intelligence-Bias Paradox"** where technical optimisation via feature scaling improves 
+predictive utility while simultaneously exacerbating demographic disparity. The baseline XGBoost achieved 
+87.02% accuracy but a severely biased Disparate Impact (DI) ratio of 0.31. A fairness-aware Exponentiated 
+Gradient model with Demographic Parity achieves 83.64% accuracy and DI = 0.85, meeting the legal 80% threshold.
+
+The study critically interrogates the 80% Rule's statistical limitations citing Chouldechova's (2017) 
+impossibility theorem, and demonstrates that SMOTE-based oversampling worsens fairness due to the 69% male 
+composition of the positive class.
+""")
+
+    # ── Sections summary ───────────────────────────────────────────────────
+    st.markdown("#### Paper Structure")
+    sections = [
+        ("1. Introduction",        "Bridges the 'trust gap' in ML systems using XAI and fairness-aware mitigation."),
+        ("2. Literature Review",   "Covers Barocas & Selbst (2016), Chouldechova (2017), Hardt et al. (2016), Lundberg & Lee (2017) and 7 more sources."),
+        ("3. Methodology",         "UCI Adult Dataset (30,162 rows), One-Hot Encoding, StandardScaler, stratified 80/20 split, 3 fairness metrics."),
+        ("4. Results & Analysis",  "5-model comparison with 95% bootstrap CIs, McNemar's tests, SHAP explainability, SMOTE mechanism analysis."),
+        ("5. Discussion",          "Demographic Parity vs Equalized Odds mitigation — FNR Flip explained, Chouldechova impossibility demonstrated."),
+        ("6. Conclusion",          "5 principal contributions beyond baseline. Central finding: accuracy alone is dangerous."),
+        ("References",             "11 academic sources including ICML, NeurIPS, California Law Review, EEOC Guidelines."),
+    ]
+    for sec, desc in sections:
+        with st.expander(sec):
+            st.markdown(desc)
+
+    st.markdown("---")
+
+    # ── Key findings visual ────────────────────────────────────────────────
+    st.markdown("#### Key Results at a Glance")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown("""
+<div style="background:#1e293b;border-radius:10px;padding:16px;text-align:center;border:1px solid #334155;">
+  <div style="font-size:2rem;font-weight:700;color:#ef4444;">0.315</div>
+  <div style="font-size:0.8rem;color:#64748b;margin-top:4px;">Baseline DI Gender<br>(❌ fails 80% rule)</div>
+</div>""", unsafe_allow_html=True)
+    with col2:
+        st.markdown("""
+<div style="background:#1e293b;border-radius:10px;padding:16px;text-align:center;border:1px solid #334155;">
+  <div style="font-size:2rem;font-weight:700;color:#4ade80;">0.852</div>
+  <div style="font-size:0.8rem;color:#64748b;margin-top:4px;">Mitigated DI Gender<br>(✅ passes 80% rule)</div>
+</div>""", unsafe_allow_html=True)
+    with col3:
+        st.markdown("""
+<div style="background:#1e293b;border-radius:10px;padding:16px;text-align:center;border:1px solid #334155;">
+  <div style="font-size:2rem;font-weight:700;color:#fbbf24;">3.4%</div>
+  <div style="font-size:0.8rem;color:#64748b;margin-top:4px;">Accuracy cost<br>of fairness</div>
+</div>""", unsafe_allow_html=True)
+
+    st.markdown("---")
+
+    # ── Download section ───────────────────────────────────────────────────
+    st.markdown("#### Download Research Paper")
+
+    paper_path = "Research Paper/Auditing_and_Mitigating_Algorithmic_Bias_IMPROVED.pdf"
+    try:
+        with open(paper_path, "rb") as f:
+            pdf_bytes = f.read()
+        col1, col2 = st.columns([1, 3])
+        with col1:
+            st.download_button(
+                label="⬇️ Download PDF",
+                data=pdf_bytes,
+                file_name="Auditing_and_Mitigating_Algorithmic_Bias.pdf",
+                mime="application/pdf",
+                use_container_width=True,
+            )
+        with col2:
+            st.markdown(f"""
+<div style="background:#1e293b;border-radius:8px;padding:12px 16px;border:1px solid #334155;font-size:0.85rem;color:#94a3b8;">
+  📄 <b style="color:#f1f5f9;">Auditing_and_Mitigating_Algorithmic_Bias.pdf</b><br>
+  <span style="color:#64748b;">Improved version · 7 pages · Includes all 5 fixes over baseline</span>
+</div>""", unsafe_allow_html=True)
+    except FileNotFoundError:
+        st.info("""
+📂 **To enable PDF download:** Add your research paper PDF to the `Research Paper/` folder in your GitHub repo.
+
+Expected path: `Research Paper/Auditing_and_Mitigating_Algorithmic_Bias_IMPROVED.pdf`
+""")
+        st.markdown("""
+The paper covers:
+- Multi-attribute bias audit (gender + race)  
+- 95% bootstrap confidence intervals on all metrics  
+- McNemar's statistical significance tests  
+- SMOTE mechanism analysis  
+- Critical examination of the 80% Rule  
+- Demographic Parity vs Equalized Odds mitigation comparison
+""")
+
+    # ── View inline ────────────────────────────────────────────────────────
+    try:
+        with open(paper_path, "rb") as f:
+            pdf_bytes = f.read()
+        import base64
+        b64 = base64.b64encode(pdf_bytes).decode()
+        st.markdown("#### Preview")
+        st.markdown(f"""
+<iframe src="data:application/pdf;base64,{b64}" 
+        width="100%" height="800px" 
+        style="border:1px solid #334155;border-radius:8px;">
+</iframe>""", unsafe_allow_html=True)
+    except FileNotFoundError:
+        pass
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# PAGE: JUPYTER NOTEBOOK
+# ══════════════════════════════════════════════════════════════════════════════
+elif page == "📓  Jupyter Notebook":
+    st.markdown('<div class="section-title">Jupyter Notebook</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-sub">Full annotated code notebook with 11 sections — each with markdown explanations, code, outputs, and findings.</div>', unsafe_allow_html=True)
+
+    # ── Notebook metadata ──────────────────────────────────────────────────
+    st.markdown("""
+<div style="background:#1e293b;border:1px solid #334155;border-radius:12px;padding:24px;margin-bottom:20px;">
+  <div style="font-size:1.1rem;font-weight:600;color:#f1f5f9;margin-bottom:8px;">
+    Bias_Audit_Improved.ipynb
+  </div>
+  <div style="font-size:0.82rem;color:#64748b;margin-bottom:16px;">Complete code notebook with explanations, visualisations and findings</div>
+  <div style="display:flex;gap:24px;flex-wrap:wrap;font-size:0.82rem;">
+    <div><span style="color:#64748b;">Sections</span><br><span style="color:#94a3b8;">11 sections</span></div>
+    <div><span style="color:#64748b;">Kernel</span><br><span style="color:#94a3b8;">Python 3.11</span></div>
+    <div><span style="color:#64748b;">Key libraries</span><br><span style="color:#94a3b8;">sklearn · xgboost · fairlearn · shap</span></div>
+    <div><span style="color:#64748b;">Runtime</span><br><span style="color:#94a3b8;">~5 min full run</span></div>
+  </div>
+</div>""", unsafe_allow_html=True)
+
+    # ── Notebook table of contents ─────────────────────────────────────────
+    st.markdown("#### Notebook Contents")
+    toc = [
+        ("Section 1",  "Setup & Imports",                    "All libraries imported and configured"),
+        ("Section 2",  "Data Loading & Cleaning",            "UCI Adult dataset, missing value handling, class distribution"),
+        ("Section 3",  "Exploratory Bias Audit",             "Gender + race disparity charts, intersectional Gender×Race analysis"),
+        ("Section 4",  "Feature Engineering & Encoding",     "One-Hot Encoding, StandardScaler, stratified train/test split"),
+        ("Section 5",  "Comparative Model Audit",            "5 models with 95% bootstrap CIs, accuracy + fairness metrics"),
+        ("Section 6",  "Statistical Significance",           "McNemar's test on all model pairs, significance table"),
+        ("Section 7",  "SHAP Explainability",                "Global importance + gender-stratified SHAP, double-standard effect"),
+        ("Section 8",  "SMOTE Mechanism Analysis",           "Why oversampling amplifies bias — mechanistic explanation"),
+        ("Section 9",  "80% Rule Critique",                  "4 limitations, Chouldechova impossibility theorem demonstrated"),
+        ("Section 10", "Bias Mitigation",                    "Dem. Parity + Eq. Odds mitigated models, FNR flip analysis"),
+        ("Section 11", "Summary Dashboard",                  "Dark-theme final summary figure with all key findings"),
+    ]
+    for sec, title, desc in toc:
+        col1, col2, col3 = st.columns([1, 2, 3])
+        with col1:
+            st.markdown(f"`{sec}`")
+        with col2:
+            st.markdown(f"**{title}**")
+        with col3:
+            st.markdown(f"<span style='color:#64748b;font-size:0.85rem;'>{desc}</span>", unsafe_allow_html=True)
+        st.divider()
+
+    st.markdown("---")
+
+    # ── Download section ───────────────────────────────────────────────────
+    st.markdown("#### Download Notebook")
+
+    nb_path = "Notebook/Bias_Audit_Improved.ipynb"
+    try:
+        with open(nb_path, "rb") as f:
+            nb_bytes = f.read()
+
+        col1, col2, col3 = st.columns([1, 1, 2])
+        with col1:
+            st.download_button(
+                label="⬇️ Download .ipynb",
+                data=nb_bytes,
+                file_name="Bias_Audit_Improved.ipynb",
+                mime="application/json",
+                use_container_width=True,
+            )
+        with col2:
+            # Also offer as .py
+            import json
+            try:
+                nb_json = json.loads(nb_bytes)
+                py_lines = []
+                for cell in nb_json.get("cells", []):
+                    if cell["cell_type"] == "markdown":
+                        py_lines.append("# " + "".join(cell["source"]).replace("\n", "\n# "))
+                        py_lines.append("")
+                    elif cell["cell_type"] == "code":
+                        py_lines.append("".join(cell["source"]))
+                        py_lines.append("")
+                py_text = "\n".join(py_lines).encode()
+                st.download_button(
+                    label="⬇️ Download .py",
+                    data=py_text,
+                    file_name="Bias_Audit_Improved.py",
+                    mime="text/plain",
+                    use_container_width=True,
+                )
+            except Exception:
+                pass
+        with col3:
+            st.markdown(f"""
+<div style="background:#1e293b;border-radius:8px;padding:12px 16px;border:1px solid #334155;font-size:0.85rem;color:#94a3b8;">
+  📓 <b style="color:#f1f5f9;">Bias_Audit_Improved.ipynb</b><br>
+  <span style="color:#64748b;">11 sections · Full annotations · Run in Jupyter or VS Code</span>
+</div>""", unsafe_allow_html=True)
+
+    except FileNotFoundError:
+        st.info("""
+📂 **To enable notebook download:** Add your notebook to the `Notebook/` folder in your GitHub repo.
+
+Expected path: `Notebook/Bias_Audit_Improved.ipynb`
+""")
+
+    # ── How to run locally ─────────────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("#### How to Run the Notebook Locally")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("**Option A — Jupyter Lab**")
+        st.code("""pip install jupyterlab
+jupyter lab Bias_Audit_Improved.ipynb""", language="bash")
+
+    with col2:
+        st.markdown("**Option B — VS Code**")
+        st.markdown("""
+1. Install the **Jupyter** extension in VS Code  
+2. Open `Bias_Audit_Improved.ipynb`  
+3. Select Python 3.11 kernel  
+4. Run All Cells
+""")
+
+    st.markdown("**Install all dependencies first:**")
+    st.code("""pip install pandas numpy scikit-learn xgboost imbalanced-learn fairlearn shap plotly matplotlib scipy""", language="bash")
+
+    # ── View notebook sections inline ──────────────────────────────────────
+    nb_path = "Notebook/Bias_Audit_Improved.ipynb"
+    try:
+        with open(nb_path, "r", encoding="utf-8") as f:
+            nb_json = json.load(f)
+
+        st.markdown("---")
+        st.markdown("#### Notebook Preview")
+        st.caption("Showing markdown cells and code — outputs not shown here, run locally for full results.")
+
+        for i, cell in enumerate(nb_json.get("cells", [])[:30]):  # first 30 cells
+            if cell["cell_type"] == "markdown":
+                content = "".join(cell["source"])
+                if content.strip().startswith("#"):
+                    st.markdown(content)
+                else:
+                    st.markdown(content)
+            elif cell["cell_type"] == "code":
+                content = "".join(cell["source"]).strip()
+                if content:
+                    st.code(content, language="python")
+
+    except FileNotFoundError:
+        pass
+    except Exception:
+        pass
