@@ -6,7 +6,7 @@ Muhammad Atif Ahmed — CS-408
 
 import warnings
 warnings.filterwarnings("ignore")
-
+import base64
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -1075,7 +1075,7 @@ composition of the positive class.
             st.markdown(f"""
 <div style="background:#1e293b;border-radius:8px;padding:12px 16px;border:1px solid #334155;font-size:0.85rem;color:#94a3b8;">
   📄 <b style="color:#f1f5f9;">Auditing_and_Mitigating_Algorithmic_Bias.pdf</b><br>
-  <span style="color:#64748b;">Improved version · 7 pages · Includes all 5 fixes over baseline</span>
+  
 </div>""", unsafe_allow_html=True)
     except FileNotFoundError:
         st.info("""
@@ -1093,20 +1093,33 @@ The paper covers:
 - Demographic Parity vs Equalized Odds mitigation comparison
 """)
 
-    # ── View inline ────────────────────────────────────────────────────────
+# ── View inline ────────────────────────────────────────────────────────
+
+# Check if file exists before processing
+if os.path.exists(paper_path):
     try:
         with open(paper_path, "rb") as f:
-            pdf_bytes = f.read()
-        import base64
-        b64 = base64.b64encode(pdf_bytes).decode()
+            base64_pdf = base64.b64encode(f.read()).decode('utf-8')
+        
         st.markdown("#### Preview")
-        st.markdown(f"""
-<iframe src="data:application/pdf;base64,{b64}" 
-        width="100%" height="800px" 
-        style="border:1px solid #334155;border-radius:8px;">
-</iframe>""", unsafe_allow_html=True)
-    except FileNotFoundError:
-        pass
+        
+        # Using a f-string for the HTML snippet
+        pdf_display = f'''
+            <iframe 
+                src="data:application/pdf;base64,{base64_pdf}" 
+                width="100%" 
+                height="800px" 
+                style="border:1px solid #334155; border-radius:8px;"
+                type="application/pdf">
+            </iframe>
+        '''
+        st.markdown(pdf_display, unsafe_allow_html=True)
+        
+    except Exception as e:
+        st.error(f"Failed to render PDF: {e}")
+else:
+    st.warning("PDF file not found at the specified path.")
+
 
 
 # ══════════════════════════════════════════════════════════════════════════════
