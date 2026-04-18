@@ -11,6 +11,7 @@ import base64
 import streamlit as st
 import pandas as pd
 import numpy as np
+from streamlit_pdf_viewer import pdf_viewer
 import plotly.graph_objects as go
 import plotly.express as px
 from plotly.subplots import make_subplots
@@ -1097,7 +1098,7 @@ The paper covers:
 # ── View inline ────────────────────────────────────────────────────────
 
 # Check if file exists before processing
-    from streamlit_pdf_viewer import pdf_viewer
+    
     if os.path.exists(paper_path):
 
         try:
