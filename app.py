@@ -1098,31 +1098,11 @@ The paper covers:
 # ── View inline ────────────────────────────────────────────────────────
 
 # Check if file exists before processing
-    
     if os.path.exists(paper_path):
-
-        try:
-            with open(paper_path, "rb") as f:
-                base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-            
-            st.markdown("#### Preview")
-            
-            # Using a f-string for the HTML snippet
-            pdf_display = f'''
-                <iframe 
-                    src="data:application/pdf;base64,{base64_pdf}" 
-                    width="100%" 
-                    height="800px" 
-                    style="border:1px solid #334155; border-radius:8px;"
-                    type="application/pdf">
-                </iframe>
-            '''
-            st.markdown(pdf_display, unsafe_allow_html=True)
-        
-        except Exception as e:
-            st.error(f"Failed to render PDF: {e}")
+        # This replaces the entire <iframe> logic
+        pdf_viewer(paper_path, width=700)
     else:
-        st.warning("PDF file not found at the specified path.")
+         st.error(f"File not found: {paper_path}")
 
 
 
