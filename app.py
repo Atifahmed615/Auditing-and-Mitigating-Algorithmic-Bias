@@ -1100,7 +1100,7 @@ The paper covers:
 # Check if file exists before processing
     if os.path.exists(paper_path):
         # This replaces the entire <iframe> logic
-        pdf_viewer(paper_path, width=1000)
+        pdf_viewer(paper_path, width=1200)
     else:
          st.error(f"File not found: {paper_path}")
 
@@ -1256,3 +1256,273 @@ jupyter lab Bias_Audit_Improved.ipynb""", language="bash")
         pass
     except Exception:
         pass
+# ══════════════════════════════════════════════════════════════════════════════
+# PAGE: LIVE PREDICTOR
+# ══════════════════════════════════════════════════════════════════════════════
+elif page == "🎯  Live Predictor":
+    st.markdown('<div class="section-title">Live Income Predictor</div>', unsafe_allow_html=True)
+    st.markdown('<div class="section-sub">Enter a person\'s profile and see how all 5 models predict their income — live. Watch how gender and race change the prediction probability.</div>', unsafe_allow_html=True)
+
+    trained     = D["trained"]
+    scaler      = D["scaler"]
+    feature_cols= D["feature_cols"]
+    num_cols_p  = D["num_cols"]
+
+    # ── Dataset options (from training data) ──────────────────────────────
+    df_ref = D["df"]
+    workclass_opts  = sorted(df_ref["workclass"].dropna().unique().tolist())
+    education_opts  = ["Preschool","1st-4th","5th-6th","7th-8th","9th","10th",
+                       "11th","12th","HS-grad","Some-college","Assoc-voc",
+                       "Assoc-acdm","Bachelors","Prof-school","Masters","Doctorate"]
+    marital_opts    = sorted(df_ref["marital-status"].dropna().unique().tolist())
+    occupation_opts = sorted(df_ref["occupation"].dropna().unique().tolist())
+    relationship_opts = sorted(df_ref["relationship"].dropna().unique().tolist())
+    race_opts       = sorted(df_ref["race"].dropna().unique().tolist())
+    country_opts    = sorted(df_ref["native-country"].dropna().unique().tolist())
+
+    edu_to_num = {"Preschool":1,"1st-4th":2,"5th-6th":3,"7th-8th":4,"9th":5,
+                  "10th":6,"11th":7,"12th":8,"HS-grad":9,"Some-college":10,
+                  "Assoc-voc":11,"Assoc-acdm":12,"Bachelors":13,
+                  "Prof-school":14,"Masters":14,"Doctorate":16}
+
+    st.markdown("---")
+    st.markdown("#### Enter a person's profile")
+
+    # ── Input form ─────────────────────────────────────────────────────────
+    c1, c2, c3 = st.columns(3)
+
+    with c1:
+        st.markdown("**Demographics**")
+        age         = st.slider("Age", 17, 90, 35)
+        sex         = st.selectbox("Sex", ["Male", "Female"])
+        race        = st.selectbox("Race", race_opts, index=race_opts.index("White") if "White" in race_opts else 0)
+        relationship= st.selectbox("Relationship", relationship_opts,
+                                    index=relationship_opts.index("Husband") if "Husband" in relationship_opts else 0)
+        marital     = st.selectbox("Marital Status", marital_opts,
+                                    index=marital_opts.index("Married-civ-spouse") if "Married-civ-spouse" in marital_opts else 0)
+        country     = st.selectbox("Native Country", country_opts,
+                                    index=country_opts.index("United-States") if "United-States" in country_opts else 0)
+
+    with c2:
+        st.markdown("**Education & Work**")
+        education   = st.selectbox("Education", education_opts,
+                                    index=education_opts.index("Bachelors"))
+        edu_num     = edu_to_num.get(education, 9)
+        st.caption(f"Education-num: **{edu_num}**")
+        workclass   = st.selectbox("Work Class", workclass_opts,
+                                    index=workclass_opts.index("Private") if "Private" in workclass_opts else 0)
+        occupation  = st.selectbox("Occupation", occupation_opts,
+                                    index=occupation_opts.index("Exec-managerial") if "Exec-managerial" in occupation_opts else 0)
+        hours_week  = st.slider("Hours per Week", 1, 99, 40)
+
+    with c3:
+        st.markdown("**Financials**")
+        capital_gain = st.number_input("Capital Gain ($)", 0, 99999, 0, step=500)
+        capital_loss = st.number_input("Capital Loss ($)", 0, 4356, 0, step=100)
+        fnlwgt       = st.number_input("Final Weight (fnlwgt)", 10000, 1500000, 189778, step=10000,
+                                        help="Census weighting variable — leave default unless you have a specific value")
+
+    st.markdown("---")
+
+    # ── Build feature vector ───────────────────────────────────────────────
+    def build_input_row(age, workclass, fnlwgt, education, edu_num,
+                         marital, occupation, relationship, race, sex,
+                         capital_gain, capital_loss, hours_week, country):
+        """Build a single-row DataFrame matching the training feature columns."""
+        raw = pd.DataFrame([{
+            "age": age, "workclass": workclass, "fnlwgt": fnlwgt,
+            "education": education, "education-num": edu_num,
+            "marital-status": marital, "occupation": occupation,
+            "relationship": relationship, "race": race, "sex": sex,
+            "capital-gain": capital_gain, "capital-loss": capital_loss,
+            "hours-per-week": hours_week, "native-country": country,
+            "income": 0  # dummy
+        }])
+
+        cats = ["workclass","education","marital-status","occupation",
+                "relationship","race","sex","native-country"]
+        raw_enc = pd.get_dummies(raw, columns=cats, drop_first=True)
+        raw_enc = raw_enc.drop("income", axis=1)
+
+        # Align to training columns — add missing cols as 0, drop extras
+        for col in feature_cols:
+            if col not in raw_enc.columns:
+                raw_enc[col] = 0
+        raw_enc = raw_enc[feature_cols]
+
+        # Scale numerical
+        raw_scaled = raw_enc.copy()
+        raw_scaled[num_cols_p] = scaler.transform(raw_enc[num_cols_p])
+        return raw_scaled
+
+    input_row = build_input_row(age, workclass, fnlwgt, education, edu_num,
+                                  marital, occupation, relationship, race, sex,
+                                  capital_gain, capital_loss, hours_week, country)
+
+    # ── Run all 5 models ───────────────────────────────────────────────────
+    model_order  = ["Logistic Regression","Random Forest","Gradient Boosting","XGBoost","SVM (Linear)"]
+    model_colors = {"Logistic Regression":"#3b82f6","Random Forest":"#22c55e",
+                    "Gradient Boosting":"#f59e0b","XGBoost":"#a78bfa","SVM (Linear)":"#ef4444"}
+
+    predictions = {}
+    probabilities = {}
+
+    for name, mdl in trained.items():
+        pred = int(mdl.predict(input_row)[0])
+        predictions[name] = pred
+        if hasattr(mdl, "predict_proba"):
+            prob = float(mdl.predict_proba(input_row)[0][1])
+        else:
+            # SVM — use decision function, convert to pseudo-probability via sigmoid
+            score = float(mdl.decision_function(input_row)[0])
+            prob  = float(1 / (1 + np.exp(-score)))
+        probabilities[name] = prob
+
+    # ── Results display ────────────────────────────────────────────────────
+    st.markdown("#### Predictions from all 5 models")
+
+    # Summary verdict
+    votes_high = sum(1 for p in predictions.values() if p == 1)
+    votes_low  = 5 - votes_high
+    verdict_color = "#22c55e" if votes_high >= 3 else "#ef4444"
+    verdict_text  = f">50K ({votes_high}/5 models agree)" if votes_high >= 3 else f"≤50K ({votes_low}/5 models agree)"
+
+    st.markdown(f"""
+<div style="background:#1e293b;border:1px solid #334155;border-radius:12px;
+            padding:20px 28px;margin-bottom:20px;display:flex;align-items:center;gap:20px;">
+  <div>
+    <div style="font-size:0.75rem;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Consensus prediction</div>
+    <div style="font-size:1.8rem;font-weight:700;color:{verdict_color};">{verdict_text}</div>
+  </div>
+  <div style="margin-left:auto;font-size:0.85rem;color:#64748b;">
+    {sex} · {age} yrs · {education} · {occupation}
+  </div>
+</div>""", unsafe_allow_html=True)
+
+    # Per-model probability bars
+    import plotly.graph_objects as go
+    fig = go.Figure()
+
+    for name in model_order:
+        prob = probabilities[name]
+        pred = predictions[name]
+        bar_color = "#22c55e" if pred == 1 else "#ef4444"
+        fig.add_trace(go.Bar(
+            name=name, x=[prob * 100], y=[name],
+            orientation="h",
+            marker_color=bar_color,
+            text=f"{'  >50K ✓' if pred==1 else '  ≤50K ✗'}  {prob*100:.1f}%",
+            textposition="outside",
+            width=0.55,
+        ))
+
+    fig.add_vline(x=50, line_dash="dash", line_color="#f59e0b",
+                  annotation_text="50% threshold", annotation_position="top")
+    fig.update_layout(
+        paper_bgcolor="#0f172a", plot_bgcolor="#111827",
+        font=dict(family="Inter", color="#94a3b8"),
+        xaxis=dict(title="Probability of earning >50K (%)", range=[0, 115],
+                   gridcolor="#1e293b", ticksuffix="%"),
+        yaxis=dict(gridcolor="#1e293b"),
+        showlegend=False,
+        height=300,
+        margin=dict(l=10, r=10, t=20, b=10),
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    # ── Bias demo: toggle gender/race ──────────────────────────────────────
+    st.markdown("---")
+    st.markdown("#### Bias Demo — change only gender or race, keep everything else the same")
+    st.caption("This shows the model's 'bonus' or 'penalty' for demographic attributes independent of qualifications.")
+
+    demo_cols = st.columns(4)
+
+    profiles = [
+        ("Male · White",   "Male",   "White"),
+        ("Male · Black",   "Male",   "Black"),
+        ("Female · White", "Female", "White"),
+        ("Female · Black", "Female", "Black"),
+    ]
+
+    xgb_model = trained["XGBoost"]
+    demo_results = []
+    for label, s, r in profiles:
+        row = build_input_row(age, workclass, fnlwgt, education, edu_num,
+                               marital, occupation, relationship, r, s,
+                               capital_gain, capital_loss, hours_week, country)
+        if hasattr(xgb_model, "predict_proba"):
+            p = float(xgb_model.predict_proba(row)[0][1]) * 100
+        else:
+            score = float(xgb_model.decision_function(row)[0])
+            p = float(1 / (1 + np.exp(-score))) * 100
+        demo_results.append((label, p))
+
+    # Find max prob for reference
+    max_prob = max(p for _, p in demo_results)
+
+    for col, (label, prob) in zip(demo_cols, demo_results):
+        diff = prob - max_prob if prob != max_prob else 0
+        diff_str = f"{diff:+.1f}%" if diff != 0 else "baseline"
+        p_color = "#22c55e" if prob >= 50 else "#ef4444"
+        diff_color = "#ef4444" if diff < -5 else "#f59e0b" if diff < 0 else "#22c55e"
+        col.markdown(f"""
+<div style="background:#1e293b;border:1px solid #334155;border-radius:10px;
+            padding:14px 16px;text-align:center;">
+  <div style="font-size:0.78rem;color:#64748b;margin-bottom:6px;">{label}</div>
+  <div style="font-size:1.6rem;font-weight:700;color:{p_color};">{prob:.1f}%</div>
+  <div style="font-size:0.75rem;color:{diff_color};margin-top:4px;">{diff_str}</div>
+</div>""", unsafe_allow_html=True)
+
+    st.markdown("")
+    st.caption("XGBoost model · Same age, education, occupation, hours — only gender/race changed")
+
+    # ── SHAP explanation for this specific input ───────────────────────────
+    st.markdown("---")
+    st.markdown("#### Why did XGBoost predict this? (SHAP explanation for this person)")
+
+    try:
+        explainer_live = shap.TreeExplainer(xgb_model)
+        sv_live_raw    = explainer_live.shap_values(input_row)
+        if isinstance(sv_live_raw, list):   sv_live = sv_live_raw[1][0]
+        elif len(sv_live_raw.shape) == 3:   sv_live = sv_live_raw[0, :, 1]
+        else:                               sv_live = sv_live_raw[0]
+
+        # Top 10 contributing features
+        shap_series = pd.Series(sv_live, index=feature_cols)
+        top_pos = shap_series.nlargest(5)
+        top_neg = shap_series.nsmallest(5)
+        top_features = pd.concat([top_pos, top_neg]).sort_values(ascending=True)
+
+        fig2 = go.Figure()
+        colors_shap = ["#ef4444" if v < 0 else "#22c55e" for v in top_features.values]
+        fig2.add_trace(go.Bar(
+            y=top_features.index,
+            x=top_features.values,
+            orientation="h",
+            marker_color=colors_shap,
+            text=[f"{v:+.4f}" for v in top_features.values],
+            textposition="outside",
+        ))
+        fig2.add_vline(x=0, line_color="#64748b", line_width=1)
+        fig2.update_layout(
+            paper_bgcolor="#0f172a", plot_bgcolor="#111827",
+            font=dict(family="Inter", color="#94a3b8"),
+            xaxis=dict(title="SHAP value (pushes prediction ← lower | higher →)",
+                       gridcolor="#1e293b", zerolinecolor="#64748b"),
+            yaxis=dict(gridcolor="#1e293b"),
+            showlegend=False, height=340,
+            margin=dict(l=10, r=80, t=20, b=10),
+        )
+        st.plotly_chart(fig2, use_container_width=True)
+        st.caption("Green = pushes prediction toward >50K · Red = pushes toward ≤50K · For this specific person")
+
+    except Exception as e:
+        st.info(f"SHAP explanation unavailable: {e}")
+
+    # ── Insight ────────────────────────────────────────────────────────────
+    ins("Try this in your presentation",
+        "Set Age=35, Education=Bachelors, Occupation=Exec-managerial, Hours=40, Capital Gain=0. "
+        "Run it as Male/White → note the probability. "
+        "Then change ONLY Sex to Female → watch the probability drop. "
+        "Then show the bias demo panel — same profile, 4 demographic combinations. "
+        "The audience will see the model's hidden penalty live.")
