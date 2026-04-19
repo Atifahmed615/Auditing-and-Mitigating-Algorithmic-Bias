@@ -328,6 +328,7 @@ def run_pipeline(_df):
 
     return dict(
         df=_df, results=results, preds_store=preds_store,
+        trained=trained,  
         mcnemar=mcnemar,
         smote=dict(f1_base=results[3]["f1"], f1_sm=f1_sm,
                    di_base=results[3]["di_g"], di_sm=di_sm_g, bal=bal_sm),
