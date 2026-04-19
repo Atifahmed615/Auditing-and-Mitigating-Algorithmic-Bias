@@ -8,10 +8,10 @@ import warnings
 warnings.filterwarnings("ignore")
 import os
 import base64
+from streamlit_pdf_viewer import pdf_viewer
 import streamlit as st
 import pandas as pd
 import numpy as np
-from streamlit_pdf_viewer import pdf_viewer
 import plotly.graph_objects as go
 import plotly.express as px
 from plotly.subplots import make_subplots
@@ -328,10 +328,6 @@ def run_pipeline(_df):
 
     return dict(
         df=_df, results=results, preds_store=preds_store,
-        trained=trained,
-        scaler=scaler,        # ADD THIS LINE
-        feature_cols=X.columns.tolist(), # ADD THIS LINE (or use your variable name)
-        num_cols=num_cols,    # ADD THIS LINE  
         mcnemar=mcnemar,
         smote=dict(f1_base=results[3]["f1"], f1_sm=f1_sm,
                    di_base=results[3]["di_g"], di_sm=di_sm_g, bal=bal_sm),
@@ -340,6 +336,8 @@ def run_pipeline(_df):
         gender_rates=gender_rates, race_rates=race_rates,
         pos_male_frac=pos_male_frac,
         Xs_te=Xs_te, sg_te=sg_te, sr_te=sr_te, y_te=y_te,
+        trained=trained, scaler=sc, feature_cols=list(X.columns),
+        num_cols=num_cols,
     )
 
 
@@ -371,7 +369,6 @@ CS-116/2026
 CS-408 · Introduction to AI  
 NED University               
 Ms Madiha Aslam
-
 """)
     st.markdown("---")
     st.caption("Data loads from UCI ML Repository on first run (~60 s)")
@@ -423,7 +420,7 @@ if page == "🏠  Overview":
 <div class="hero">
   <h1>Auditing & Mitigating Algorithmic Bias</h1>
   <p>A comparative study of ML fairness across five architectures using the UCI Adult Income Dataset</p>
-  <div class="meta">Muhammad Atif Ahmed &nbsp;·&nbsp; CS-408 Introduction to AI &nbsp;·&nbsp; April 2026</div>
+  <div class="meta">Muhammad Atif Ahmed &nbsp;·&nbsp; CS-408 Introduction to AI &nbsp;·&nbsp; March 2026</div>
 </div>""", unsafe_allow_html=True)
 
     metric_row([
@@ -998,7 +995,7 @@ elif page == "📄  Research Paper":
   <div style="display:flex;gap:24px;flex-wrap:wrap;font-size:0.82rem;">
     <div><span style="color:#64748b;">Author</span><br><span style="color:#94a3b8;">Muhammad Atif Ahmed</span></div>
     <div><span style="color:#64748b;">Course</span><br><span style="color:#94a3b8;">CS-408 · Introduction to AI</span></div>
-    <div><span style="color:#64748b;">Date</span><br><span style="color:#94a3b8;">April, 2026</span></div>
+    <div><span style="color:#64748b;">Date</span><br><span style="color:#94a3b8;">March 2, 2026</span></div>
     <div><span style="color:#64748b;">Pages</span><br><span style="color:#94a3b8;">7 pages</span></div>
   </div>
 </div>""", unsafe_allow_html=True)
@@ -1082,7 +1079,6 @@ composition of the positive class.
             st.markdown(f"""
 <div style="background:#1e293b;border-radius:8px;padding:12px 16px;border:1px solid #334155;font-size:0.85rem;color:#94a3b8;">
   📄 <b style="color:#f1f5f9;">Auditing_and_Mitigating_Algorithmic_Bias.pdf</b><br>
-  
 </div>""", unsafe_allow_html=True)
     except FileNotFoundError:
         st.info("""
@@ -1100,15 +1096,13 @@ The paper covers:
 - Demographic Parity vs Equalized Odds mitigation comparison
 """)
 
-# ── View inline ────────────────────────────────────────────────────────
-
-# Check if file exists before processing
+    # ── View inline ────────────────────────────────────────────────────────
+    # Check if file exists before processing
     if os.path.exists(paper_path):
         # This replaces the entire <iframe> logic
         pdf_viewer(paper_path, width=1200)
     else:
          st.error(f"File not found: {paper_path}")
-
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1261,6 +1255,8 @@ jupyter lab Bias_Audit_Improved.ipynb""", language="bash")
         pass
     except Exception:
         pass
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE: LIVE PREDICTOR
 # ══════════════════════════════════════════════════════════════════════════════
