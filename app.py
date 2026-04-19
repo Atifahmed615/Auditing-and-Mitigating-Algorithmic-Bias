@@ -328,7 +328,10 @@ def run_pipeline(_df):
 
     return dict(
         df=_df, results=results, preds_store=preds_store,
-        trained=trained,  
+        trained=trained,
+        scaler=scaler,        # ADD THIS LINE
+        feature_cols=X.columns.tolist(), # ADD THIS LINE (or use your variable name)
+        num_cols=num_cols,    # ADD THIS LINE  
         mcnemar=mcnemar,
         smote=dict(f1_base=results[3]["f1"], f1_sm=f1_sm,
                    di_base=results[3]["di_g"], di_sm=di_sm_g, bal=bal_sm),
