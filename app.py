@@ -1329,32 +1329,50 @@ elif page == "🎯  Live Predictor":
     def build_input_row(age, workclass, fnlwgt, education, edu_num,
                          marital, occupation, relationship, race, sex,
                          capital_gain, capital_loss, hours_week, country):
-        """Build a single-row DataFrame matching the training feature columns."""
-        raw = pd.DataFrame([{
-            "age": age, "workclass": workclass, "fnlwgt": fnlwgt,
-            "education": education, "education-num": edu_num,
-            "marital-status": marital, "occupation": occupation,
-            "relationship": relationship, "race": race, "sex": sex,
-            "capital-gain": capital_gain, "capital-loss": capital_loss,
-            "hours-per-week": hours_week, "native-country": country,
-            "income": 0  # dummy
-        }])
+        """Build a single-row DataFrame matching the training feature columns.
 
-        cats = ["workclass","education","marital-status","occupation",
-                "relationship","race","sex","native-country"]
-        raw_enc = pd.get_dummies(raw, columns=cats, drop_first=True)
-        raw_enc = raw_enc.drop("income", axis=1)
+        Root-cause fix: pd.get_dummies on a single row with drop_first=True
+        is unreliable — if the row's value IS the reference category, no column
+        is created AND if it's the only value present, drop_first silently drops
+        the only column.  Instead we start from a zero-vector of all training
+        columns and flip exactly the right dummy column to 1.
+        """
+        # Start with a zero row aligned to every training feature
+        row = pd.DataFrame([{col: 0 for col in feature_cols}])
 
-        # Align to training columns — add missing cols as 0, drop extras
-        for col in feature_cols:
-            if col not in raw_enc.columns:
-                raw_enc[col] = 0
-        raw_enc = raw_enc[feature_cols]
+        # ── Numerical features (set directly) ──────────────────────────────
+        row["age"]           = age
+        row["fnlwgt"]        = fnlwgt
+        row["education-num"] = edu_num
+        row["capital-gain"]  = capital_gain
+        row["capital-loss"]  = capital_loss
+        row["hours-per-week"]= hours_week
 
-        # Scale numerical
-        raw_scaled = raw_enc.copy()
-        raw_scaled[num_cols_p] = scaler.transform(raw_enc[num_cols_p])
-        return raw_scaled
+        # ── Categorical features ────────────────────────────────────────────
+        # get_dummies with drop_first=True drops the FIRST alphabetical category.
+        # We replicate that: for each categorical, the first sorted unique value
+        # is the reference (all zeros). For any other value we set its column to 1.
+        cat_map = {
+            "workclass":       workclass,
+            "education":       education,
+            "marital-status":  marital,
+            "occupation":      occupation,
+            "relationship":    relationship,
+            "race":            race,
+            "sex":             sex,
+            "native-country":  country,
+        }
+        for cat_name, chosen_value in cat_map.items():
+            col_name = f"{cat_name}_{chosen_value}"
+            if col_name in feature_cols:
+                row[col_name] = 1
+            # If col_name not in feature_cols, this value IS the reference
+            # category (dropped by drop_first) — leaving zeros is correct.
+
+        # ── Scale numerical columns ─────────────────────────────────────────
+        row_scaled = row.copy()
+        row_scaled[num_cols_p] = scaler.transform(row[num_cols_p])
+        return row_scaled
 
     input_row = build_input_row(age, workclass, fnlwgt, education, edu_num,
                                   marital, occupation, relationship, race, sex,
