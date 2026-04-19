@@ -357,6 +357,7 @@ with st.sidebar:
         "✅  Conclusions",
         "📄  Research Paper",
         "📓  Jupyter Notebook",
+        "🎯  Live Predictor",
     ])
     st.markdown("---")
     st.markdown("""
