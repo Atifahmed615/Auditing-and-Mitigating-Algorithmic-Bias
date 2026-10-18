@@ -1,5 +1,5 @@
 # Algorithmic Bias Audit — Interactive App
-**Muhammad Atif Ahmed · CS-408 Introduction to AI · March 2026**
+**CS-408 Introduction to AI · March 2026**
 
 ---
 
