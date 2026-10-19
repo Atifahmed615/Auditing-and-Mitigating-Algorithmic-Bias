@@ -982,7 +982,7 @@ elif page == "📄  Research Paper":
     A Comparative Study of Machine Learning Fairness across Architectures
   </div>
   <div style="display:flex;gap:24px;flex-wrap:wrap;font-size:0.82rem;">
-    <div><span style="color:#64748b;">Date</span><br><span style="color:#94a3b8;">April, 2026</span></div>
+    <div><span style="color:#64748b;">Date</span><br><span style="color:#94a3b8;">October 2026</span></div>
     <div><span style="color:#64748b;">Pages</span><br><span style="color:#94a3b8;">7 pages</span></div>
   </div>
 </div>""", unsafe_allow_html=True)
