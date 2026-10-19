@@ -1,5 +1,5 @@
 # Algorithmic Bias Audit — Interactive App
-**CS-408 Introduction to AI · March 2026**
+# Algorithmic Bias Audit
 
 ---
 

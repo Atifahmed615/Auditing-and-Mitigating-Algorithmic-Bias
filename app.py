@@ -361,11 +361,6 @@ with st.sidebar:
         "🎯  Live Predictor",
     ])
     st.markdown("---")
-    st.markdown("""
-CS-408 · Introduction to AI  
-NED University
-""")
-    st.markdown("---")
     st.caption("Data loads from UCI ML Repository on first run (~60 s)")
 
 
@@ -415,7 +410,6 @@ if page == "🏠  Overview":
 <div class="hero">
   <h1>Auditing & Mitigating Algorithmic Bias</h1>
   <p>A comparative study of ML fairness across five architectures using the UCI Adult Income Dataset</p>
-  <div class="meta">CS-408 Introduction to AI &nbsp;·&nbsp; April 2026</div>
 </div>""", unsafe_allow_html=True)
 
     metric_row([
@@ -988,7 +982,6 @@ elif page == "📄  Research Paper":
     A Comparative Study of Machine Learning Fairness across Architectures
   </div>
   <div style="display:flex;gap:24px;flex-wrap:wrap;font-size:0.82rem;">
-    <div><span style="color:#64748b;">Course</span><br><span style="color:#94a3b8;">CS-408 · Introduction to AI</span></div>
     <div><span style="color:#64748b;">Date</span><br><span style="color:#94a3b8;">April, 2026</span></div>
     <div><span style="color:#64748b;">Pages</span><br><span style="color:#94a3b8;">7 pages</span></div>
   </div>
